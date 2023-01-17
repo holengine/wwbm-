@@ -50,6 +50,4 @@ config/initializers/carrierwave.rb
 .DS_Store
 */.DS_Store
 
-/yarn-error.log
-yarn-debug.log*
-.yarn-integrity
+.yarn
