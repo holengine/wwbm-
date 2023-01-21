@@ -90,4 +90,25 @@ RSpec.describe GamesController, type: :controller do
 
     end
   end
+
+  context 'another auth user' do
+    let(:another_user) { create(:user) }
+    before { sign_in another_user }
+
+    describe '#show' do
+      before { get :show, params: {id: game_w_questions.id} }
+
+      it 'response status not eq 200' do
+        expect(response.status).not_to eq 200
+      end
+
+      it 'response redirect to root_path' do
+        expect(response).to redirect_to(root_path)
+      end
+
+      it 'displayed flash alert' do
+        expect(flash[:alert]).to be
+      end
+    end
+  end
 end
