@@ -36,5 +36,14 @@ module Wwtbam
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    config.generators do |g|
+      g.test_framework :rspec,
+                       request_specs: false,
+                       view_specs: false,
+                       routing_specs: false,
+                       helper_specs: false,
+                       controller_specs: true
+    end
   end
 end
