@@ -85,24 +85,15 @@ RSpec.describe Game, type: :model do
     end
   end
   
-  describe 'current game question' do
-    it 'correct' do
-      game = create(:game)
-      level = game.current_level
-      question = create(:question, level: level)
-      game_question = create(:game_question, game: game, question: question)
-      expect(game.current_game_question).to eq(game_question)
+  describe '#current_game_question' do
+    it 'question is correctly displayed' do
+      expect(game_w_questions.current_game_question).to eq(game_w_questions.game_questions[0])
     end
   end
 
-  describe 'previous_level' do
-    it 'correct' do
-      expect(game_w_questions.previous_level).to eq(game_w_questions.current_level - 1)
+  describe '#previous_level' do
+    it 'previous level is correctly displayed' do
+      expect(game_w_questions.previous_level).to eq(-1)
     end
   end
 end
-
-
-# def current_game_question
-#   game_questions.detect { |q| q.question.level == current_level }
-# end
