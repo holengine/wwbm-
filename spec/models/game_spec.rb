@@ -96,4 +96,56 @@ RSpec.describe Game, type: :model do
       expect(game_w_questions.previous_level).to eq(-1)
     end
   end
+
+  describe '#answer_current_question' do
+    let(:question) { game_w_questions.current_game_question }
+    let(:correct_answer_is_given) { game_w_questions.answer_current_question!(question.correct_answer_key) }
+    let(:wrong_answer_is_given) { game_w_questions.answer_current_question!('x') }
+
+    context 'right answer' do
+      it 'game continues' do
+        correct_answer_is_given
+
+        expect(game_w_questions.status).to eq(:in_progress)
+        expect(game_w_questions.current_level).to eq(1)
+      end
+
+      it 'game is won' do
+        game_w_questions.current_level = 14
+
+        correct_answer_is_given
+
+        expect(game_w_questions.status).to eq(:won)
+        expect(game_w_questions.prize).to eq(Game::PRIZES.last)
+        expect(game_w_questions.finished?).to be_truthy
+      end
+
+      it 'time has ended' do
+        game_w_questions.created_at -= Game::TIME_LIMIT
+
+        correct_answer_is_given
+
+        expect(game_w_questions.status).to eq(:timeout)
+        expect(game_w_questions.finished?).to be_truthy
+      end
+    end
+
+    context 'wrong answer' do
+      it 'game finished' do
+        wrong_answer_is_given
+
+        expect(game_w_questions.status).to eq(:fail)
+        expect(game_w_questions.finished?).to be_truthy
+      end
+
+      it 'time has ended' do
+        game_w_questions.created_at -= Game::TIME_LIMIT
+
+        wrong_answer_is_given
+
+        expect(game_w_questions.status).to eq(:timeout)
+        expect(game_w_questions.finished?).to be_truthy
+      end
+    end
+  end
 end
