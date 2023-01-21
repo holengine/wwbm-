@@ -5,54 +5,89 @@ RSpec.describe GamesController, type: :controller do
   let(:user) { create(:user) }
   let(:admin) { create(:user, is_admin: true ) }
   let(:game_w_questions) { create(:game_with_questions, user: user) }
+  let(:game) { assigns(:game) }
 
   context 'anon user' do
-    it 'kick from #show' do
-      get :show, params: {id: game_w_questions.id}
+    describe '#show' do
+      before { get :show, params: {id: game_w_questions.id} }
 
-      expect(response.status).not_to eq 200
-      expect(response).to redirect_to(new_user_session_path)
-      expect(flash[:alert]).to be
+      it 'response status not eq 200' do
+        expect(response.status).not_to eq 200
+      end
+
+      it 'response redirect to new_user_session_path' do
+        expect(response).to redirect_to(new_user_session_path)
+      end
+
+      it 'displayed flash alert' do
+        expect(flash[:alert]).to be
+      end
     end
   end
 
   context 'auth user' do
     before { sign_in user }
 
-    it 'creates game' do
-      generate_questions(60)
+    describe "#create" do
+      before { generate_questions(60) }
+      before { post :create }
 
-      post :create
+      it 'game not finished' do
+        expect(game.finished?).to be_falsey
+      end
 
-      game = assigns(:game)
+      it 'game belongs to the current user' do
+        expect(game.user).to eq(user)
+      end
 
-      expect(game.finished?).to be_falsey
-      expect(game.user).to eq(user)
+      it 'response redirect to game_path' do
+        expect(response).to redirect_to game_path(game)
+      end
 
-      expect(response).to redirect_to game_path(game)
-      expect(flash[:notice]).to be
+      it 'displayed notice alert' do
+        expect(flash[:notice]).to be
+      end
     end
 
-    it 'show game' do
-      get :show, params: {id: game_w_questions.id}
-      game = assigns(:game)
+    describe '#show' do
+      before { get :show, params: {id: game_w_questions.id} }
 
-      expect(game.finished?).to be_falsey
-      expect(game.user).to eq(user)
+      it 'game not finished' do
+        expect(game.finished?).to be_falsey
+      end
 
-      expect(response.status).to eq(200)
-      expect(response).to render_template('show')
+      it 'game belongs to the current user' do
+        expect(game.user).to eq(user)
+      end
+
+      it 'response status eq 200' do
+        expect(response.status).to eq(200)
+      end
+
+      it 'render template show' do
+        expect(response).to render_template('show')
+      end
     end
 
-    it 'answer correct' do
-      put :answer, params: {id: game_w_questions.id, letter: game_w_questions.current_game_question.correct_answer_key}
+    describe '#answer' do
+      before { put :answer, params: {id: game_w_questions.id, letter: game_w_questions.current_game_question.correct_answer_key} }
 
-      game = assigns(:game)
+      it 'game not finished' do
+        expect(game.finished?).to be_falsey
+      end
 
-      expect(game.finished?).to be_falsey
-      expect(game.current_level).to be > 0
-      expect(response).to redirect_to(game_path)
-      expect(flash.empty?).to be_truthy
+      it 'current level > 0' do
+        expect(game.current_level).to be > 0
+      end
+
+      it 'response redirect to game_path' do
+        expect(response).to redirect_to(game_path)
+      end
+
+      it 'not displayed alert' do
+        expect(flash.empty?).to be_truthy
+      end
+
     end
   end
 end
