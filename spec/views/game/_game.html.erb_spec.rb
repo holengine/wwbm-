@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "users/index", type: :view do
+RSpec.describe "games/game", type: :view do
   let(:game) { build_stubbed(:game, id: 15, created_at: Time.parse('2022.10.09, 10:00'), current_level: 10, prize: 1000) }
 
   before() do

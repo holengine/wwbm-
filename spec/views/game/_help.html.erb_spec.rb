@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "users/index", type: :view do
+RSpec.describe "games/help", type: :view do
   let(:game) { build_stubbed(:game) }
   let(:help_hash) { {friend_call: 'Сережа считает, что это вариант D'} }
 
