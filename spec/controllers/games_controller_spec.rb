@@ -33,7 +33,7 @@ RSpec.describe GamesController, type: :controller do
     end
 
     describe '#create' do
-      before() do
+      before do
         generate_questions(60)
         post :create
       end
@@ -64,7 +64,7 @@ RSpec.describe GamesController, type: :controller do
     before { sign_in user }
 
     describe "#create" do
-      before() do
+      before do
         generate_questions(60)
         post :create
       end
@@ -182,7 +182,7 @@ RSpec.describe GamesController, type: :controller do
     end
 
     describe '#takemoney' do
-      before() do
+      before do
         game_w_questions.update_attribute(:current_level, 2)
         put :take_money, params: {id: game_w_questions.id}
       end
@@ -215,7 +215,7 @@ RSpec.describe GamesController, type: :controller do
 
     describe '#help' do
       shared_examples "next question cannot be applied the same help" do |help_type|
-        before() do
+        before do
           game_w_questions.answer_current_question!(game_w_questions.current_game_question.correct_answer_key)
           game.reload
           put :help, params: {id: game_w_questions.id, help_type: help_type}

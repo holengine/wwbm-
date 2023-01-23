@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "users/index", type: :view do
-  before() do
+  before do
     assign(:users, [
       build_stubbed(:user, name: "Вадим", balance: 5000),
       build_stubbed(:user, name: "Михаил", balance: 3000)

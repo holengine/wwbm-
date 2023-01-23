@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe "users/show", type: :view do
   let(:user) { build_stubbed(:user, name: "User", balance: 1000) }
 
-  before() do
+  before do
     assign(:user, user)
     assign(:games, [nil])
 

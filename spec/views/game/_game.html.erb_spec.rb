@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe "games/game", type: :view do
   let(:game) { build_stubbed(:game, id: 15, created_at: Time.parse('2022.10.09, 10:00'), current_level: 10, prize: 1000) }
 
-  before() do
+  before do
     allow(game).to receive(:status).and_return(:in_progress)
 
     render partial: 'users/game', object: game
