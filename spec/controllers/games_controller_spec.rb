@@ -214,26 +214,64 @@ RSpec.describe GamesController, type: :controller do
     end
 
     describe '#help' do
-      before { put :help, params: {id: game_w_questions.id, help_type: :audience_help} }
+      shared_examples "next question cannot be applied the same help" do |help_type|
+        before() do
+          game_w_questions.answer_current_question!(game_w_questions.current_game_question.correct_answer_key)
+          game.reload
+          put :help, params: {id: game_w_questions.id, help_type: help_type}
+        end
 
-      it 'game not finished' do
-        expect(game.finished?).to be_falsey
+        it 'response redirect to game_path' do
+          expect(response).to redirect_to(game_path(game))
+        end
+
+        it 'displayed flash alert' do
+          expect(flash[:alert]).to be
+        end
       end
 
-      it 'audience_help used' do
-        expect(game.audience_help_used).to be_truthy
+      context 'correct apply audience_help' do
+        before { put :help, params: {id: game_w_questions.id, help_type: :audience_help} }
+
+        it 'game not finished' do
+          expect(game.finished?).to be_falsey
+        end
+
+        it 'audience_help used' do
+          expect(game.audience_help_used).to be_truthy
+        end
+
+        it 'response redirect to game_path' do
+          expect(response).to redirect_to(game_path(game))
+        end
+
+        it 'displayed info alert' do
+          expect(flash[:info]).to be
+        end
+
+        it_should_behave_like "next question cannot be applied the same help", :audience_help
       end
 
-      it 'be audience_help in game_question' do
-        expect(game.current_game_question.help_hash[:audience_help]).to be
-      end
+      context 'correct apply fifty_fifty' do
+        before { put :help, params: {id: game_w_questions.id, help_type: :fifty_fifty} }
 
-      it 'be keys audience_help in game_question' do
-        expect(game.current_game_question.help_hash[:audience_help].keys).to contain_exactly('a', 'b', 'c', 'd')
-      end
+        it 'game not finished' do
+          expect(game.finished?).to be_falsey
+        end
 
-      it 'response redirect to game_path' do
-        expect(response).to redirect_to(game_path(game))
+        it 'fifty_fifty help used' do
+          expect(game.fifty_fifty_used).to be_truthy
+        end
+
+        it 'response redirect to game_path' do
+          expect(response).to redirect_to(game_path(game))
+        end
+
+        it 'displayed info alert' do
+          expect(flash[:info]).to be
+        end
+
+        it_should_behave_like "next question cannot be applied the same help", :fifty_fifty
       end
     end
   end
