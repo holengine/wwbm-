@@ -76,5 +76,25 @@ RSpec.describe GameQuestion, type: :model do
         end
       end
     end
+
+    context 'correct friend_call' do
+      context 'there is no desired key' do
+        it 'help_hash not include friend_call' do
+          expect(game_question.help_hash).not_to include(:friend_call)
+        end
+      end
+
+      context 'there is the right key' do
+        before { game_question.apply_help!(:friend_call) }
+
+        it 'help_hash include friend_call' do
+          expect(game_question.help_hash).to include(:friend_call)
+        end
+
+        it 'correct display' do
+          expect(game_question.help_hash[:friend_call]).to include('считает, что это вариант')
+        end
+      end
+    end
   end
 end
