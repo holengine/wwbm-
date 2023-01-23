@@ -212,6 +212,30 @@ RSpec.describe GamesController, type: :controller do
         expect(flash[:warning]).to be
       end
     end
+
+    describe '#help' do
+      before { put :help, params: {id: game_w_questions.id, help_type: :audience_help} }
+
+      it 'game not finished' do
+        expect(game.finished?).to be_falsey
+      end
+
+      it 'audience_help used' do
+        expect(game.audience_help_used).to be_truthy
+      end
+
+      it 'be audience_help in game_question' do
+        expect(game.current_game_question.help_hash[:audience_help]).to be
+      end
+
+      it 'be keys audience_help in game_question' do
+        expect(game.current_game_question.help_hash[:audience_help].keys).to contain_exactly('a', 'b', 'c', 'd')
+      end
+
+      it 'response redirect to game_path' do
+        expect(response).to redirect_to(game_path(game))
+      end
+    end
   end
 
   context 'another auth user' do
