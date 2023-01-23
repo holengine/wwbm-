@@ -44,7 +44,11 @@ Rails.application.configure do
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
-
+  #
   # Annotate rendered view with file names.
   # config.action_view.annotate_rendered_view_with_filenames = true
+  config.serve_static_files = true
+  config.assets.debug = true
+  config.asset_host = 'http://localhost:3000'
+  config.static_cache_control = 'public, max-age=3600'
 end
