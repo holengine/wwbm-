@@ -7,21 +7,56 @@ RSpec.describe GamesController, type: :controller do
   let(:game_w_questions) { create(:game_with_questions, user: user) }
   let(:game) { assigns(:game) }
 
+  shared_examples "closed_access" do
+    it 'new game was not created' do
+      expect(game).to be_nil
+    end
+
+    it 'response status not eq 200' do
+      expect(response.status).not_to eq 200
+    end
+
+    it 'response redirect to new_user_session_path' do
+      expect(response).to redirect_to(new_user_session_path)
+    end
+
+    it 'displayed flash alert' do
+      expect(flash[:alert]).to be
+    end
+  end
+
   context 'anon user' do
     describe '#show' do
       before { get :show, params: {id: game_w_questions.id} }
 
-      it 'response status not eq 200' do
-        expect(response.status).not_to eq 200
+      it_should_behave_like "closed_access"
+    end
+
+    describe '#create' do
+      before() do
+        generate_questions(60)
+        post :create
       end
 
-      it 'response redirect to new_user_session_path' do
-        expect(response).to redirect_to(new_user_session_path)
-      end
+      it_should_behave_like "closed_access"
+    end
 
-      it 'displayed flash alert' do
-        expect(flash[:alert]).to be
-      end
+    describe '#answer' do
+      before { put :answer, params: {id: game_w_questions.id, letter: game_w_questions.current_game_question.correct_answer_key} }
+
+      it_should_behave_like "closed_access"
+    end
+
+    describe '#take_money' do
+      before { put :take_money, params: {id: game_w_questions.id} }
+
+      it_should_behave_like "closed_access"
+    end
+
+    describe '#help' do
+      before { put :help, params: {id: game_w_questions.id, help_type: :friend_call} }
+
+      it_should_behave_like "closed_access"
     end
   end
 
