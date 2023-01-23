@@ -136,22 +136,48 @@ RSpec.describe GamesController, type: :controller do
     end
 
     describe '#answer' do
-      before { put :answer, params: {id: game_w_questions.id, letter: game_w_questions.current_game_question.correct_answer_key} }
+      context 'right answer' do
+        before { put :answer, params: {id: game_w_questions.id, letter: game_w_questions.current_game_question.correct_answer_key} }
 
-      it 'game not finished' do
-        expect(game.finished?).to be_falsey
+        it 'game not finished' do
+          expect(game.finished?).to be_falsey
+        end
+
+        it 'current level > 0' do
+          expect(game.current_level).to be > 0
+        end
+
+        it 'response redirect to game_path' do
+          expect(response).to redirect_to(game_path)
+        end
+
+        it 'not displayed alert' do
+          expect(flash.empty?).to be_truthy
+        end
       end
 
-      it 'current level > 0' do
-        expect(game.current_level).to be > 0
-      end
+      context 'wrong answer' do
+        before { put :answer, params: {id: game_w_questions.id, letter: 'x'} }
 
-      it 'response redirect to game_path' do
-        expect(response).to redirect_to(game_path)
-      end
+        it 'game not finished' do
+          expect(game.finished?).to be_truthy
+        end
 
-      it 'not displayed alert' do
-        expect(flash.empty?).to be_truthy
+        it 'status :fail' do
+          expect(game.status).to eq(:fail)
+        end
+
+        it 'prize = 0' do
+          expect(game_w_questions.prize).to eq(0)
+        end
+
+        it 'response redirect to user_path' do
+          expect(response).to redirect_to(user_path(user))
+        end
+
+        it 'displayed flash alert' do
+          expect(flash[:alert]).to be
+        end
       end
     end
 
