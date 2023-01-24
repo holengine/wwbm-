@@ -4,23 +4,24 @@ RSpec.feature 'USER show another user profile', type: :feature do
   let(:user) { create :user, name: 'Пользователь №1' }
   let(:another_user) { create :user, name: 'Пользователь №2' }
 
-  let!(:games) do
-    create(:game,
-           user_id: user.id,
-           created_at: Time.parse('2023-01-23, 14:00 UTC'),
-           current_level: 3904,
-           prize: 55
+  let!(:games) {[
+    create(
+      :game,
+      user_id: user.id,
+      created_at: Time.parse('2023-01-23, 14:00 UTC'),
+      current_level: 3904,
+      prize: 55
+    ),
+    create(
+      :game,
+      user_id: user.id,
+      created_at: Time.parse('2023-01-23, 13:00 UTC'),
+      finished_at: Time.parse('2023-01-23, 13:10 UTC'),
+      is_failed: true,
+      current_level: 22232,
+      prize: 1000
     )
-
-    create(:game,
-           user_id: user.id,
-           created_at: Time.parse('2023-01-23, 13:00 UTC'),
-           finished_at: Time.parse('2023-01-23, 13:10 UTC'),
-           is_failed: true,
-           current_level: 22232,
-           prize: 1000
-    )
-  end
+  ]}
 
   before { login_as another_user }
 
