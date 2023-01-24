@@ -159,7 +159,7 @@ RSpec.describe GamesController, type: :controller do
       context 'wrong answer' do
         before { put :answer, params: {id: game_w_questions.id, letter: 'x'} }
 
-        it 'game not finished' do
+        it 'game finished' do
           expect(game.finished?).to be_truthy
         end
 
